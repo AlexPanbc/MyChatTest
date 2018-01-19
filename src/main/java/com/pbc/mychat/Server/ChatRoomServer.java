@@ -16,6 +16,7 @@ public class ChatRoomServer {
     public ChatRoomServer(int port) {
         this.port = port;
     }
+
     public void start() {
 
         //创建两个线程组
@@ -40,8 +41,8 @@ public class ChatRoomServer {
             boss.shutdownGracefully();//关闭
         }
     }
-    public static void main( String[] args )
-    {
+
+    public static void main(String[] args) {
         new ChatRoomServer(8888).start();
     }
 }
