@@ -30,9 +30,10 @@ public class ChatRoomServer {
                     .childHandler(new ChatServerInitialize()) // TODO: 2018/1/19 设置处理客户端请求的回调类
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .option(ChannelOption.SO_KEEPALIVE, true);
-            ChannelFuture future = boot.bind(this.port).sync();
+            ChannelFuture future = boot.bind(this.port).sync();//启动服务器
             System.out.println("服务器已启动...");
-            future.channel().closeFuture().sync();
+            future.channel().closeFuture().sync();//关闭服务器
+            System.out.println("服务器关闭...");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {

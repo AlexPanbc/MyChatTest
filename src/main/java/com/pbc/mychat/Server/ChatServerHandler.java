@@ -1,10 +1,13 @@
 package com.pbc.mychat.Server;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 /**
@@ -24,7 +27,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         channels.add(incoming);//新加入的客户端加入到队列去
         for (Channel ch : channels)
             if (ch != incoming)
-                ch.writeAndFlush("欢迎：" + incoming.remoteAddress() + "进入聊天室"+ "\n");
+                ch.writeAndFlush("欢迎：" + incoming.remoteAddress() + "进入聊天室" + "\n");
 
 //        super.handlerAdded(ctx);
     }
@@ -36,15 +39,30 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         channels.remove(incoming);//新加入的客户端加入到队列去
         for (Channel ch : channels)
             if (ch != incoming)
-                ch.writeAndFlush("再见：" + incoming.remoteAddress() + "离开了聊天室"+ "\n");
+                ch.writeAndFlush("再见：" + incoming.remoteAddress() + "离开了聊天室" + "\n");
 
         // super.handlerRemoved(ctx);
     }
 
-    // TODO: 2018/1/19 当监听到客户端活动时 
+    //连接超时
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        super.userEventTriggered(ctx, evt);
+        if (evt instanceof IdleStateEvent)
+        {
+            IdleStateEvent e = (IdleStateEvent) evt;
+            if (e.state() == IdleState.READER_IDLE) {
+                ctx.close();
+            } else if (e.state() == IdleState.WRITER_IDLE) {
+                ctx.writeAndFlush("断开断开");
+            }
+        }
+    }
+
+    // TODO: 2018/1/19 当监听到客户端活动时
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("[" + ctx.channel().remoteAddress() + "]:在线中..."+ "\n");
+        System.out.println("[" + ctx.channel().remoteAddress() + "]:在线中..." + "\n");
 //        super.channelActive(ctx);
     }
 
@@ -52,14 +70,17 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 
-        System.out.println("[" + ctx.channel().remoteAddress() + "]:拜拜了..."+ "\n");
+        System.out.println("[" + ctx.channel().remoteAddress() + "]:拜拜了..." + "\n");
 //        super.channelInactive(ctx);
     }
 
     // TODO: 2018/1/19 出错时 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
+//        super.exceptionCaught(ctx, cause);
+        Channel c = ctx.channel();
+        System.out.println(c.remoteAddress()+"id:"+c.id()+"通讯异常");
+        c.close();
     }
 
     @Override
@@ -70,6 +91,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     // TODO: 2018/1/19 当有客户端消息写入的时
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
         Channel client = ctx.channel();
+        System.out.println("服务器接收到[" + client.id() + "]说：" + msg + "\n");
         for (Channel ch : channels)
             if (ch != client) {
                 ch.writeAndFlush("用户：" + client.remoteAddress() + "说：" + msg + "\n");

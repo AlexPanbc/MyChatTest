@@ -23,9 +23,9 @@ public class ChatServerInitialize extends ChannelInitializer<SocketChannel> {
         //3 将消息分为消息头和消息体两部分，在消息头中  用一个数据说明消息体的长度
         //4 或者其他复杂的协议
 
-        pipeline.addLast("framer",new DelimiterBasedFrameDecoder(8912, Delimiters.lineDelimiter()));
-        pipeline.addLast("decoder",new StringDecoder());
-        pipeline.addLast("encoder",new StringEncoder());
+        pipeline.addLast("framer",new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));//8192  8k
+        pipeline.addLast("decoder",new StringDecoder());//添加解码器
+        pipeline.addLast("encoder",new StringEncoder());//
         pipeline.addLast("handler",new ChatServerHandler());
     }
 }
