@@ -54,7 +54,7 @@ public class HttpRequesstHanler extends SimpleChannelInboundHandler<FullHttpRequ
             }
             //读取默认页面
             RandomAccessFile file = new RandomAccessFile(indexFile, "r");
-            HttpResponse response = new DefaultFullHttpResponse(request.getProtocolVersion(), HttpResponseStatus.OK);
+            HttpResponse response = new DefaultHttpResponse(request.getProtocolVersion(), HttpResponseStatus.OK);//用的是DefaultHttpResponse不是DefaultFullHttpResponse
             response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html;charset=utf-8");
             boolean keepAlive = HttpHeaders.isKeepAlive(request);
             if (keepAlive) {
