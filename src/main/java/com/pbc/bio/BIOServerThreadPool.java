@@ -19,13 +19,15 @@ public class BIOServerThreadPool {
         try {
             ss = new ServerSocket(PROT);
             System.out.println("服务启动...");
-            HanderExecutorPool pool = new HanderExecutorPool(4, 1);
+            HanderExecutorPool pool = new HanderExecutorPool(8, 1);
             boolean isTrue = false;
             while (true) {
                 if (pool.wqueue.size() < 1) {
                     System.out.println("等待人数：" + pool.wqueue.size());
                     System.out.println("等待客户进入...");
+
                     Socket socket = ss.accept();
+
                     System.out.println("客人进房...");
                     pool.execute(new BIOServerHandler(socket));
                     System.out.println("活动线程数：" + pool.activeCount + "个");
@@ -33,6 +35,10 @@ public class BIOServerThreadPool {
                     // new Thread(new BIOServerHandler(socket)).start();//每一个客户端消息过来都会开启一个线程
                 } else {
                     if (isTrue) {
+//                        下面几句不起作用
+//                        Socket socket = ss.accept();
+//                        socket.getOutputStream().write("人满了等会吧".getBytes());
+//                        new BIOServerHandler(socket);
                         System.out.println("满员 稍等再来");
                         isTrue = false;
                     }
