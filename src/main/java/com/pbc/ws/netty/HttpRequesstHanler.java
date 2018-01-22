@@ -1,4 +1,4 @@
-package com.pbc.mychat.webchat;
+package com.pbc.ws.netty;
 
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
