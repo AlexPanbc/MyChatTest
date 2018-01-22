@@ -34,7 +34,7 @@ public class TextWebSocketFrameHandle extends SimpleChannelInboundHandler<TextWe
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();// TODO: 2018/1/19 获得客户端通道
-        channels.remove(incoming);//新加入的客户端加入到队列去
+        channels.remove(incoming);//有客户端开 时执行
         for (Channel ch : channels)
             if (ch != incoming)
                 ch.writeAndFlush("再见：" + incoming.remoteAddress() + "离开了聊天室" + "\n");
