@@ -27,7 +27,7 @@ public class NettyClient {
                 });
         ChannelFuture future = bootstrap.connect("127.0.0.1", 8888);
         future.channel().writeAndFlush(Unpooled.copiedBuffer("你好".getBytes()));//此时 触发服务端绑定的 回调类（给服务端发送数据时 触发回调类）
-        future.channel().closeFuture().sync();//接受服务器 返回的值触发 客户端的回调类
+        future.channel().closeFuture().sync();//接受服务器 返回的值触发 客户端的回调类//阻止 客户端结束
         workGroup.shutdownGracefully();
         System.out.println("end....");
 

@@ -21,10 +21,10 @@ public class NettyServer {
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();//辅助工具类，用于服务端通道的一系列设置
+
             bootstrap.group(bossGroup, workGroup)//绑定线程组
                     .channel(NioServerSocketChannel.class)//指定NIO模式
                     .childHandler(new ChannelInitializer<SocketChannel>() {
-
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(new ServerHandler());//设定回调类
@@ -34,8 +34,9 @@ public class NettyServer {
                     .option(ChannelOption.SO_RCVBUF, 32 * 1024)//接受数据缓冲区大小
                     .option(ChannelOption.SO_SNDBUF, 32 * 1024)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
+
             ChannelFuture future = bootstrap.bind(port).sync();
-            //组织程序结束
+            //阻止程序结束
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
