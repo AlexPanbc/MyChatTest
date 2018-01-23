@@ -15,19 +15,20 @@ public class AIOServer {
     //线程组
     private AsynchronousChannelGroup channelGroup;
     //服务器通道
-    private AsynchronousServerSocketChannel channel;
+    protected AsynchronousServerSocketChannel channel;
 
     public AIOServer(int port) {
 
         try {
             exceutorService = Executors.newCachedThreadPool();
             //创建线程组
-            channelGroup = AsynchronousChannelGroup.withCachedThreadPool(exceutorService,1);
+            channelGroup = AsynchronousChannelGroup.withCachedThreadPool(exceutorService, 1);
 //创建服务器通道
             channel = AsynchronousServerSocketChannel.open(channelGroup);
             channel.bind(new InetSocketAddress(port));
-            System.out.println("服务器已启动 端口号是："+port);
-
+            System.out.println("服务器已启动 端口号是：" + port);
+            channel.accept(this,new ServerCompletionHandler());
+            Thread.sleep(Integer.MAX_VALUE);
 
         } catch (Exception e) {
             e.printStackTrace();
